@@ -36,4 +36,9 @@ public class User {
         this.age = age;
         this.password = password;
     }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
 }

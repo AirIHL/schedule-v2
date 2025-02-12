@@ -4,11 +4,13 @@ import com.example.schedulev2.dto.SignUpResponseDto;
 import com.example.schedulev2.dto.UserResponseDto;
 import com.example.schedulev2.entity.User;
 import com.example.schedulev2.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,6 +38,32 @@ public class UserService {
 
         User findUser = optionalUser.get();
 
-        return new UserResponseDto(findUser.getName(), findUser.getAge(), findUser.getEmail(), findUser.getPhoneNumber());
+        return new UserResponseDto(findUser.getId(), findUser.getName(), findUser.getAge(), findUser.getEmail(), findUser.getPhoneNumber());
+    }
+
+    @Transactional
+    public void updatePassword(Long id, String oldPassword, String newPassword) {
+
+        User findUser = userRepository.findByIdOrElseThrow(id);
+
+        if (!findUser.getPassword().equals(oldPassword)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다!");
+        }
+
+        findUser.updatePassword(newPassword);
+
+    }
+
+    public void delete(Long id) {
+
+        User findUser = userRepository.findByIdOrElseThrow(id);
+
+        userRepository.delete(findUser);
+
+    }
+
+    public List<UserResponseDto> findAll() {
+
+        return userRepository.findAll().stream().map(UserResponseDto::toDto).toList();
     }
 }
