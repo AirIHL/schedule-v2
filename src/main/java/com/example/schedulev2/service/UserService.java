@@ -66,4 +66,15 @@ public class UserService {
 
         return userRepository.findAll().stream().map(UserResponseDto::toDto).toList();
     }
+
+    public User login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
+
+        if (!user.getPassword().equals(password)) {
+            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        return user;
+    }
 }
